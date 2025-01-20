@@ -60,63 +60,64 @@
          </div>
       </header>
       <!-- end header -->
-      <div class="our_club">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-10 offset-md-1">
-                  <div class="titlepage text_align_center">
-                     <h2>Contact our Team</h2>
-                     <p>Details</p>
-                  </div>
-               </div>
-               <div class="col-md-12">
-                  <div class="club_btn">
-                     <a class="read_more " href="Javascript:void(0)">Get In Touch</a>
-                     <a class="read_more" href="Javascript:void(0)">Map</a>
-                     <a class="read_more" href="Javascript:void(0)">Join now</a>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
       
-      <!--  contact -->
-      <div  class="contact">
-         <div class="container">
-            <div class="row">
-               <div class="col-md-12">
-               </div>
+      <div class="our_club">
+   <div class="container">
+      <div class="row">
+         <div class="col-md-10 offset-md-1">
+            <div class="titlepage text_align_center">
+               <h2>私たちのチームと連絡を取る <br>Connect with our Team</h2>
             </div>
-            <div class="row">
-               <div class="col-md-12">
-                  <div class="titlepage text_align_center">
-                     <h2>Contact Us</h2>
+         </div>
+         <div class="col-md-12">
+            <div class="club_btn">
+               <button class="read_more" onclick="showContent('contactForm')">Contact Details</button>
+               <button class="read_more" onclick="showContent('map')">地図 - Map</button>
+               <button class="read_more" onclick="showContent('nothing')">Join now</button>
+            </div>
+         </div>
+         <div class="col-md-12">
+            <!-- Dynamic Content Section -->
+            <div id="contactForm" class="content" style="display: none;">
+               <div>
+                  <h3 style="text-align: center;">.</h3>
+
+                  <div style="background-color: #ecc2c2; color: #333; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 25px; width: 100%; line-height: 1.6; font-size: 14px; text-align: left; height: 260px; overflow: auto;">
+                
+                     <button style="display: block; margin: 0 auto;">Mobile Number: 0123456789</button>  <br><br>
+                     <button style="display: block; margin: 0 auto;">Email ID: 0123456789</button>  <br><br>
+                     <button style="display: block; margin: 0 auto;">Address: 0123456789</button>  <br><br>
                   </div>
                </div>
-               <div class=" col-md-10 offset-md-1">
-                  <form id="request" class="main_form">
-                     <div class="row">
-                        <div class="col-md-12 ">
-                           <input class="contactus" placeholder="Your Name" type="type" name="Your Name"> 
-                        </div>
-                        <div class="col-md-6">
-                           <input class="contactus" placeholder="Phone number" type="type" name="Phone number">                          
-                        </div>
-                        <div class="col-md-6">
-                           <input class="contactus" placeholder="Email" type="type" name="Email"> 
-                        </div>
-                        <div class="col-md-12">
-                           <textarea class="textarea" placeholder="Message" type="type" Message="Name">Message</textarea>
-                        </div>
-                        <div class="col-md-12">
-                           <button class="send_btn">Send</button>
-                        </div>
-                     </div>
-                  </form>
-               </div>
+            </div>
+            <div id="map" class="content" style="display: block;">
+               <h3 style="text-align: center;">.</h3>
+               <!-- Embed Google Map -->
+               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3239.703176594248!2d139.76708351224713!3d35.708921272464025!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188d8ca06a2b21%3A0xb47488f1cc2c9fb9!2z44CSMTEwLTAwMDgg5p2x5Lqs6YO95Y-w5p2x5Yy65rGg5LmL56uv77yR5LiB55uu77yR4oiS77yR!5e0!3m2!1sja!2sjp!4v1737354184484!5m2!1sja!2sjp" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div id="nothing" class="content" style="display: none;">
+               <h3  style="text-align: center;">No Content Available</h3>
+               <p  style="text-align: center;">There is nothing to display for this section.</p>
             </div>
          </div>
       </div>
+   </div>
+</div>
+
+<script>
+   function showContent(section) {
+      // Hide all content divs
+      document.querySelectorAll('.content').forEach(content => {
+         content.style.display = 'none';
+      });
+
+      // Show the selected content
+      document.getElementById(section).style.display = 'block';
+   }
+</script>
+
+
+      
       <!-- end contact -->
       <!-- footer -->
       <footer>
