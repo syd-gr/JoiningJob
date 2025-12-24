@@ -1,224 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <style>
-   
-   .floating-image {
-  position: absolute;
-  top: 20px;        /* Adjust this to move the image vertically */
-  left: 20px;       /* Adjust this to move the image horizontally */
-  width: 120px;     /* Resize as needed */
-  z-index: 10;      /* Make sure it stays above section backgrounds */
-  pointer-events: none; /* Prevents interaction (click-through) */
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Gallery</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #000814;
+            --heart-color: #ff1e1e; 
+            --heart-path: path("M250 440c-10-10-190-170-190-280 0-70 50-120 120-120 40 0 70 20 70 20s30-20 70-20c70 0 120 50 120 120 0 110-180 270-190 280z");
+        }
 
-   
-#aboutCarousel .carousel-control-prev,
-#aboutCarousel .carousel-control-next {
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-}
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-color);
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
 
-#aboutCarousel .carousel-control-prev-icon,
-#aboutCarousel .carousel-control-next-icon {
-  background-size: 100% 100%;
-}
-</style>
+        /* --- HIGH VISIBILITY BACKGROUND HEART --- */
+        .background-heart-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Adjusted size for better background presence */
+            width: 90vmin; 
+            height: 90vmin;
+            z-index: 1;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Joining Job</title>
-  <link rel="stylesheet" href="style.css" />
+        .background-heart-container svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--heart-color);
+            /* Stronger drop-shadow for high visibility */
+            filter: drop-shadow(0 0 40px rgba(255, 0, 0, 0.8)); 
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 0.3; 
+            }
+            50% { 
+                transform: scale(1.1); 
+                opacity: 0.6; /* Bright pulse point */
+            }
+        }
+
+        /* --- GALLERY GRID --- */
+        .gallery_wrapper {
+            --img-size: 110px;
+            display: grid;
+            gap: 0.5rem;
+            grid-template-columns: repeat(6, var(--img-size));
+            grid-template-rows: repeat(5, var(--img-size));
+            z-index: 5;
+            position: relative;
+        }
+
+        img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            grid-column: span 2;
+            border-radius: 0.5rem;
+            clip-path: path("M 80 20 C 100 0 100 0 120 20 C 140 40 160 60 180 80 C 200 100 200 100 180 120 C 160 140 140 160 120 180 C 100 200 100 200 80 180 C 60 160 40 140 20 120 C 0 100 0 100 20 80 Z");
+            transition: filter 500ms, transform 300ms;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Grid specific layout for 11 items */
+        img:nth-of-type(4) { grid-column: 2 / span 2; grid-row: 2; }
+        img:nth-of-type(9) { grid-column: 2 / span 2; grid-row: 4; }
+        img:nth-of-type(11) { grid-column: 3 / span 2; grid-row: 5; }
+
+        img:hover {
+            transform: scale(1.15);
+            filter: brightness(1.2) drop-shadow(0 0 15px white);
+            z-index: 100;
+        }
+
+        .gallery_wrapper:hover > img:not(:hover) {
+            filter: brightness(0.2) blur(3px);
+        }
+
+        /* --- BUTTON --- */
+        .btn-container { margin-top: 2rem; z-index: 10; }
+        .christmas-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #d00000, #ff4d4d);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            transition: 0.3s;
+        }
+
+        .christmas-btn:hover {
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.9);
+            transform: translateY(-5px);
+        }
+
+        /* --- OVERLAYS --- */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #message-overlay h1 {
+            font-size: clamp(2.5rem, 10vw, 6rem);
+            color: #fff;
+            text-shadow: 0 0 30px #ff0000;
+            text-align: center;
+        }
+
+        .full-image-container {
+            position: relative;
+            width: 80vmin;
+            height: 80vmin;
+            clip-path: var(--heart-path);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+
+        .full-image-container img {
+            width: 98%;
+            height: 98%;
+            object-fit: cover;
+            clip-path: var(--heart-path);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: white;
+            font-size: 50px;
+            cursor: pointer;
+            z-index: 2100;
+            line-height: 1;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">
-      <img src="images/logo.png" alt="Joining Job Logo">
+    <div class="background-heart-container">
+        <svg viewBox="0 0 512 512">
+            <path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/>
+        </svg>
     </div>
-    <h1 style="text-align: center; color: #007BFF;">株式会社 Joining Job</h1>
-    <nav class="nav">
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#service">Services</a></li>
-        <li><a href="#about2">Company</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <!-- Hero Section -->
-  <!-- Wrapper div to hold both sections and the floating image -->
-<div class="section-wrapper" style="position: relative;">
+    <article class="gallery_wrapper">
+        <img src="1.jpeg" onclick="openImage(this.src)" alt="1">
+        <img src="2.jpeg" onclick="openImage(this.src)" alt="2">
+        <img src="3.jpeg" onclick="openImage(this.src)" alt="3">
+        <img src="4.jpeg" onclick="openImage(this.src)" alt="4">
+        <img src="5.jpeg" onclick="openImage(this.src)" alt="5">
+        <img src="6.jpeg" onclick="openImage(this.src)" alt="6">
+        <img src="7.jpeg" onclick="openImage(this.src)" alt="7">
+        <img src="8.jpeg" onclick="openImage(this.src)" alt="8">
+        <img src="9.jpeg" onclick="openImage(this.src)" alt="9">
+        <img src="10.jpeg" onclick="openImage(this.src)" alt="10">
+        <img src="11.jpeg" onclick="openImage(this.src)" alt="11">
+    </article>
 
-  <!-- Floating image at the top-left -->
-  <img src="images/foot.png" class="floating-image" alt="Floating Image">
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-text">
-      <h2 style="color: #007BFF;">
-        人材派遣事業は、企業が一時的な人材需要を満たすために、必要なスキルや経験を持つ人材を提供するサービスです。
-      </h2>
-      <h5 style="color: #007BFF;">
-        企業が特や業務に必要な人材を、必要な期間、必要な数だけ、柔軟に利用することができます。
-      </h5>
-      <br><br>
+    <div class="btn-container">
+        <button class="christmas-btn" onclick="showChristmasBlast()">Open Christmas Surprise 🎄</button>
     </div>
-    <div class="hero-image">
-      <img src="images/img-1.png" alt="Hero Image">
+
+    <div id="message-overlay" class="overlay" onclick="this.style.display='none'">
+        <h1>Merry Christmas! 🎅✨</h1>
     </div>
-  </section>
 
-  <!-- What We Do Section -->
-  <section id="about" class="what-we-do" style="background-image: url('images/portfolio-bg.png'); background-size: cover; background-position: center;">
-    <h2 style="color: #f9f9f9;">What We Do</h2>
-    <div class="card-container">
-      <div class="card" style="background-color: #F0F8FF; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">
-        <img src="images/sport1.png" alt="Training">
-        <h3>新卒(Shinsotsu)</h3>
-      </div>
-
-      <div class="card" style="background-color: #2ccb7c; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">
-        <img src="images/img-15.png" alt="Training">
-        <h3>転職(Tenshoku)</h3>
-      </div>
-
-      <div class="card" style="background-color: #2e82cb; padding: 15px; border-radius: 10px; border: 1px solid #ccc;">
-        <img src="images/sport3.png" alt="Training">
-        <h3>アルバイト(Arubaito)</h3>
-      </div>
-    </div>
-  </section>
-</div>
-
-
-  <!-- About Section -->
-  <section class="about" style="background-image: url('images/abc.jpg'); background-size: cover; background-position: center;">
-    <div class="about-image">
-      <img src="images/img-8.png" alt="About Us">
-    </div>
-    <div class="about-content">
-      <h2 style="text-align: center; color: #007BFF;">【事業概要】</h2>
-      <br>
-      <h3 style="color: #007BFF;">
-        私たちの事業では、クライアント企業のニーズに合った最適な人材を素早く提供し、高品質なサービスを提供することを重視しています。<br><br>
-        また、弊社ネットワークによる外国人スタッフの育成・教育を行い、日本における人財不足を補います。<br><br>
-        人材のスキルや能力だけでなく、コミュニケーション能力やチームワーク能力なども考慮し、クライアント企業との良好な関係を築くことを目指しています。<br><br>
-        私たちは、人々が持つ様々な能力や才能を最大限に活かし、彼らの可能性を広げることを支援します。これにより、個々の人材が自己実現を果たし、より豊かな人生を送ることができるようになります。
-      </h3>
-    </div>
-  </section>
-
-  <!-- Portfolio -->
-    <section id="service" class="portfolio" style="background-image: url('images/banner-bg.png'); background-size: cover; background-position: center;">
-    <h1>最高のビジネスサービスを提供しています</h1>
-      <br>
-    <div class="portfolio-images">
-      <img src="images/img-9.png" alt="Portfolio 1">
-      <img src="images/img-10.png" alt="Portfolio 2">
-      <img src="images/img-11.png" alt="Portfolio 3">
-    </div>
-  </section>
-  
- <section id="about2" class="section py-5" style="background-image: url('images/bg-img.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-  <div class="container">
-    <h2 class="text-center mb-4" style="color: #ffffff;">会社概要 - About Our Company</h2>
-    <div class="row align-items-start">
-      <!-- Left Column: Button Info -->
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <div class="p-4 shadow-sm bg-primary text-white rounded h-100">
-          <div class="d-flex flex-column gap-2" style="background-color: #8377d8;">
-            <button class="btn btn-light text-start"><strong>会社名:</strong> Joining Job (ジョイニングジョブ)</button>
-            <button class="btn btn-light text-start"><strong>住所:</strong> 〒110-0008 東京都台東区池の端１丁目１番１号</button>
-            <button class="btn btn-light text-start"><strong>設立:</strong> 2025年2月1日</button>
-            <button class="btn btn-light text-start"><strong>代表取締役:</strong> 村田佳昭</button>
-            <button class="btn btn-light text-start"><strong>資本金:</strong> 2000万円</button>
-            <button class="btn btn-light text-start"><strong>事業内容:</strong> 人材紹介・外国人就労支援</button>
-            <button class="btn btn-light text-start"><strong>ビジョン:</strong> 世界と日本の架け橋に</button>
-            <button class="btn btn-light text-start"><strong>ミッション:</strong> 外国人の夢をサポート</button>
-          </div>
+    <div id="image-viewer" class="overlay">
+        <div class="close-btn" onclick="document.getElementById('image-viewer').style.display='none'">&times;</div>
+        <div class="full-image-container">
+            <img id="full-img-content" src="">
         </div>
-      </div>
-
-      <!-- Right Column: Image Slider -->
-     <div class="col-lg-6 text-center">
-  <div class="p-2 bg-white shadow-sm rounded position-relative">
-    <div id="aboutCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
-      
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img src="images/clint.jpg" class="d-block w-100 rounded" alt="About Image 1">
-          <h3>村田佳昭 <br> Murata Yoshiaki <br>社長 (President)</h3>
-        </div>
-        <div class="carousel-item">
-          <img src="images/clint2.jpg" class="d-block w-100 rounded" alt="About Image 2">
-          <h3>カルキ・スボル <br> Karki Subol <br>会長補佐 (Assistant President)</h3>
-        </div>
-      </div>
-
-      <!-- Navigation arrows -->
-      <button class="carousel-control-prev" type="button" data-bs-target="#aboutCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#aboutCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
     </div>
-  </div>
-</div>
 
+    <script>
+        function showChristmasBlast() {
+            var duration = 5 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ 
+                    particleCount: 12, 
+                    spread: 80, 
+                    origin: { y: 0.6 }, 
+                    colors: ['#ff0000', '#ffffff', '#00ff00', '#ffd700'] 
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+            document.getElementById('message-overlay').style.display = 'flex';
+        }
 
-      
-    </div>
-  </div>
-</section>
-
-
-  <!-- Footer -->
-  <footer id="contact" class="footer">
-    <div class="footer-left">
-      <h4>住所</h4>
-      <p>〒110-0015東京都台東区東上野2－23－23広田ビル２階
-        <br><br>
-      営業時間:
-        <br>
-        月曜日から金曜日、午前9時から午後6時
-
-        祝日, 土曜, 日曜：休業</p>
-    </div>
-    <div class="footer-middle">
-      <h4 style="text-align: center;">連絡先の詳細</h4>
-      <a href="#" class="contact-btn">Mobile: 03-6240-1874</a>
-      <a href="#" class="contact-btn">Email: info@joiningjob.com</a>
-      <a href="#" class="contact-btn">FAX: 03-6240-1884</a>
-      
-      <div class="social-icons"  style="display: flex; justify-content: center;">
-        <a href="#"><img src="images/fb-icon.png" alt="Facebook"></a>
-      </div>
-    </div>
-    <div class="footer-right">
-      <h4>QUICK LINKS</h4>
-      <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </div>
-  </footer>
-
-  <div class="copyright">
-    <p>&copy; 2025 Joining Job. All Rights Reserved.</p>
-  </div>
-
+        function openImage(src) {
+            document.getElementById('full-img-content').src = src;
+            document.getElementById('image-viewer').style.display = 'flex';
+        }
+    </script>
 </body>
 </html>
