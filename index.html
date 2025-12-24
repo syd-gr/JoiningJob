@@ -222,6 +222,20 @@
         transform: translateY(120vh) rotate(45deg);
     }
 }
+/* --- EXCLUDE 2.png FROM HEART MASK & CENTER IT --- */
+img[src="2.png"] {
+    clip-path: none !important;
+    border-radius: 0px;
+
+    width: 60%;
+    height: 120%;
+    object-fit: cover;
+
+    display: block;
+    margin: auto; /* centers horizontally & vertically */
+}
+
+
 
     </style>
 </head>
@@ -236,7 +250,7 @@
 
     <article class="gallery_wrapper">
         <img src="1.jpeg" onclick="openImage(this.src)" alt="1">
-        <img src="2.jpeg" onclick="openImage(this.src)" alt="2">
+        <img src="2.png" onclick="openImage(this.src)" alt="2">
         <img src="3.jpeg" onclick="openImage(this.src)" alt="3">
         <img src="4.jpeg" onclick="openImage(this.src)" alt="4">
         <img src="5.jpeg" onclick="openImage(this.src)" alt="5">
