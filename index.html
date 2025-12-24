@@ -138,23 +138,27 @@
             text-align: center;
         }
 
-        .full-image-container {
-            position: relative;
-            width: 80vmin;
-            height: 80vmin;
-            clip-path: var(--heart-path);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: white;
-        }
+.full-image-container {
+    position: relative;
+    width: min(90vw, 700px);
+    height: min(90vh, 700px);
+    background: #000;
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(255,255,255,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
 
-        .full-image-container img {
-            width: 98%;
-            height: 98%;
-            object-fit: cover;
-            clip-path: var(--heart-path);
-        }
+.full-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    clip-path: none !important;
+}
+
 
         .close-btn {
             position: absolute;
@@ -166,9 +170,63 @@
             z-index: 2100;
             line-height: 1;
         }
+
+        /* --- FALLING HEARTS BACKGROUND --- */
+.falling-hearts {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.falling-hearts span {
+    position: absolute;
+    top: -10%;
+    width: 14px;
+    height: 14px;
+    background: #ff1e1e;
+    opacity: 0.4;
+    transform: rotate(45deg);
+    animation: fall linear infinite;
+}
+
+.falling-hearts span::before,
+.falling-hearts span::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #ff1e1e;
+    border-radius: 50%;
+}
+
+.falling-hearts span::before {
+    top: -7px;
+    left: 0;
+}
+
+.falling-hearts span::after {
+    left: -7px;
+    top: 0;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(0) rotate(45deg);
+    }
+    100% {
+        transform: translateY(120vh) rotate(45deg);
+    }
+}
+
     </style>
 </head>
 <body>
+        <div class="falling-hearts"></div>
 
     <div class="background-heart-container">
         <svg viewBox="0 0 512 512">
@@ -226,5 +284,19 @@
             document.getElementById('image-viewer').style.display = 'flex';
         }
     </script>
+
+    <script>
+    const heartContainer = document.querySelector('.falling-hearts');
+
+    for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('span');
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = 5 + Math.random() * 7 + 's';
+        heart.style.opacity = Math.random() * 0.4 + 0.2;
+        heart.style.transform = `scale(${Math.random() + 0.5}) rotate(45deg)`;
+        heartContainer.appendChild(heart);
+    }
+</script>
+
 </body>
 </html>
